@@ -11,6 +11,7 @@ import br.com.testes.api_rest.entities.User;
 import br.com.testes.api_rest.entities.dto.UserDTO;
 import br.com.testes.api_rest.repositories.UserRepository;
 import br.com.testes.api_rest.services.UserService;
+import br.com.testes.api_rest.services.exceptions.DataIntegratyViolationException;
 import br.com.testes.api_rest.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -35,7 +36,15 @@ public class UserServiceImpl implements UserService{
 	}
 	@Override
 	public User create(UserDTO obj) {
+		findByEmail(obj);
 		return repository.save(mapper.map(obj, User.class));
+	}
+	private void findByEmail(UserDTO obj) {
+		Optional<User>user=repository.findByEmail(obj.getEmail());
+		if(user.isPresent()) {
+			throw new DataIntegratyViolationException("Este e-mail já está cadastrado no sistema");
+			
+		}
 	}
 
 }
