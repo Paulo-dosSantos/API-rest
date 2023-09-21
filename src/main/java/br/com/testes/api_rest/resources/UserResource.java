@@ -1,5 +1,8 @@
 package br.com.testes.api_rest.resources;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +30,14 @@ public class UserResource {
 		User user= service.findById(id);
 		
 		return ResponseEntity.ok().body(modelMapper.map(user, UserDTO.class));
+	}
+	
+	@GetMapping
+	public ResponseEntity<List<UserDTO>>findAll(){
+		
+		List<UserDTO>listDTO= service.findAll().stream().map(x->modelMapper.map(x, UserDTO.class)).collect(Collectors.toList());
+		return ResponseEntity.ok().body(listDTO);
+		
 	}
 
 }
