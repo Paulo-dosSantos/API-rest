@@ -3,10 +3,12 @@ package br.com.testes.api_rest.services.impl;
 import java.util.List;
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.testes.api_rest.entities.User;
+import br.com.testes.api_rest.entities.dto.UserDTO;
 import br.com.testes.api_rest.repositories.UserRepository;
 import br.com.testes.api_rest.services.UserService;
 import br.com.testes.api_rest.services.exceptions.ObjectNotFoundException;
@@ -16,6 +18,9 @@ public class UserServiceImpl implements UserService{
 	
 	@Autowired
 	private UserRepository repository;
+	
+	@Autowired
+	private ModelMapper mapper;
 
 	@Override
 	public User findById(Integer id) {
@@ -27,6 +32,10 @@ public class UserServiceImpl implements UserService{
 		List<User>users= repository.findAll();
 		
 		return users;
+	}
+	@Override
+	public User create(UserDTO obj) {
+		return repository.save(mapper.map(obj, User.class));
 	}
 
 }
