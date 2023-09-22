@@ -3,6 +3,7 @@ package br.com.testes.api_rest.services.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -93,7 +95,16 @@ class UserServiceImplTest {
 
 	@Test
 	void testCreate() {
-		fail("Not yet implemented");
+		when(repository.save(any())).thenReturn(user);
+		User response=service.create(userDTO);
+		
+		assertNotNull(response);
+		assertEquals(User.class,response.getClass());
+		assertEquals(ID,response.getId());
+		assertEquals(NAME,response.getName());
+		assertEquals(EMAIL,response.getEmail());
+		assertEquals(PASSWORD,response.getPassword());
+		
 	}
 
 	@Test
