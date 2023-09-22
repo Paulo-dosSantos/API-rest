@@ -61,5 +61,11 @@ public class UserServiceImpl implements UserService{
 		entity.setPassword(obj.getPassword());
 		
 	}
+	@Override
+	public void delete(Integer id) {
+		findById(id);
+		repository.deleteById(id);
+		
+	}
 
 }
