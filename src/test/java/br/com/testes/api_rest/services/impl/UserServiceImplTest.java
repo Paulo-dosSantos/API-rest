@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -25,7 +26,9 @@ import br.com.testes.api_rest.services.exceptions.ObjectNotFoundException;
 @SpringBootTest
 class UserServiceImplTest {
 	
-	private static final String SENHA = "poscrise";
+	private static final String EXCECAO = "Objeto não encontrado";
+
+	private static final String PASSWORD = "poscrise";
 
 	private static final String EMAIL = "coringuete@gmail.com";
 
@@ -75,7 +78,17 @@ class UserServiceImplTest {
 
 	@Test
 	void testFindAll() {
-		fail("Not yet implemented");
+		when(repository.findAll()).thenReturn(List.of(user));
+		List<User>response=service.findAll();
+		assertNotNull(response);
+		assertEquals(1,response.size());
+		assertEquals(User.class,response.get(0).getClass());
+		
+		assertEquals(ID, response.get(0).getId());
+		assertEquals(NAME, response.get(0).getName());
+		assertEquals(PASSWORD, response.get(0).getPassword());
+		assertEquals(EMAIL, response.get(0).getEmail());
+		
 	}
 
 	@Test
@@ -93,20 +106,20 @@ class UserServiceImplTest {
 		fail("Not yet implemented");
 	}
 	private void startUser() {
-		user= new User(ID, NAME, EMAIL, SENHA);
-		userDTO= new UserDTO(1, NAME, EMAIL, SENHA);
-		optionalUser= Optional.of(new User(1, NAME, EMAIL, SENHA));
+		user= new User(ID, NAME, EMAIL, PASSWORD);
+		userDTO= new UserDTO(1, NAME, EMAIL, PASSWORD);
+		optionalUser= Optional.of(new User(1, NAME, EMAIL, PASSWORD));
 	}
 	@Test
 	void testFindByIdReturnObjectNotFoundException() {
-		when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException("Objeto não encontrado"));
+		when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException(EXCECAO));
 		
 		try {
 			service.findById(ID);
 		}
 		catch(Exception ex) {
 			assertEquals(ObjectNotFoundException.class, ex.getClass());
-			assertEquals("Objeto não encontrado",ex.getMessage());
+			assertEquals(EXCECAO,ex.getMessage());
 		}
 	}
 
