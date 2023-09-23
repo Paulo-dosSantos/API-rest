@@ -173,5 +173,22 @@ class UserServiceImplTest {
 			assertEquals(EXCECAO,ex.getMessage());
 		}
 	}
+	@Test
+	void testUpdateIntegratyViolationException() {
+		when(repository.findByEmail(anyString())).thenReturn(optionalUser);
+		
+		try {
+			optionalUser.get().setId(2);
+			service.create(userDTO);
+			
+		}      
+		catch(Exception ex) {
+			assertEquals(DataIntegratyViolationException.class,ex.getClass());
+			assertEquals(EMAIL_JA_CADASTRADO,ex.getMessage());
+			
+		}
+	
+		
+	}
 
 }
