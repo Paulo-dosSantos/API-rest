@@ -31,9 +31,11 @@ import br.com.testes.api_rest.services.exceptions.ObjectNotFoundException;
 @SpringBootTest
 class UserServiceImplTest {
 	
+	private static final String OBJETO_NÃO_ENCONTRADO = "Objeto não encontrado";
+
 	private static final String EMAIL_JA_CADASTRADO = "Este e-mail já está cadastrado no sistema";
 
-	private static final String EXCECAO = "Objeto não encontrado";
+	private static final String EXCECAO = OBJETO_NÃO_ENCONTRADO;
 
 	private static final String PASSWORD = "poscrise";
 
@@ -161,6 +163,20 @@ class UserServiceImplTest {
 		verify(repository,times(1)).deleteById(anyInt());
 		
 		
+	}
+	@Test
+	void testDeleteWithObjectNotFoundException() {
+		when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException(
+				OBJETO_NÃO_ENCONTRADO));
+		
+		try {
+			service.delete(ID);
+		}
+		catch(Exception e){
+			assertEquals(ObjectNotFoundException.class, e.getClass());
+			assertEquals(OBJETO_NÃO_ENCONTRADO,e.getMessage());
+			
+		}
 	}
 	private void startUser() {
 		user= new User(ID, NAME, EMAIL, PASSWORD);
