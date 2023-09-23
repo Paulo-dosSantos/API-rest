@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -15,7 +16,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,11 +23,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import br.com.testes.api_rest.entities.User;
 import br.com.testes.api_rest.entities.dto.UserDTO;
 import br.com.testes.api_rest.repositories.UserRepository;
+import br.com.testes.api_rest.services.exceptions.DataIntegratyViolationException;
 import br.com.testes.api_rest.services.exceptions.ObjectNotFoundException;
 
 @SpringBootTest
 class UserServiceImplTest {
 	
+	private static final String EMAIL_JA_CADASTRADO = "Este e-mail já está cadastrado no sistema";
+
 	private static final String EXCECAO = "Objeto não encontrado";
 
 	private static final String PASSWORD = "poscrise";
@@ -37,6 +40,12 @@ class UserServiceImplTest {
 	private static final String NAME = "Bruce Wayne";
 
 	private static final Integer ID = 1;
+	
+	private static final String NAME2 = "John Constantine";
+	private static final String EMAIL2 = "constantine@gmail.com";
+	private static final String PASSWORD2 = "vertigo@gmail.com";
+	
+	
 
 	@InjectMocks
 	private UserServiceImpl service;
@@ -49,6 +58,8 @@ class UserServiceImplTest {
 	
 	private User user;
 	private UserDTO userDTO;
+	
+	private User user2;
 	
 	private Optional<User>optionalUser;
 
@@ -106,10 +117,37 @@ class UserServiceImplTest {
 		assertEquals(PASSWORD,response.getPassword());
 		
 	}
+	@Test
+	void testCreateIntegratyViolationException() {
+		when(repository.findByEmail(anyString())).thenReturn(optionalUser);
+		
+		try {
+			optionalUser.get().setId(2);
+			service.create(userDTO);
+			
+		}      
+		catch(Exception ex) {
+			assertEquals(DataIntegratyViolationException.class,ex.getClass());
+			assertEquals(EMAIL_JA_CADASTRADO,ex.getMessage());
+			
+		}
+	
+		
+	}
 
 	@Test
 	void testUpdate() {
-		fail("Not yet implemented");
+		when(repository.save(any())).thenReturn(user);
+		User response=service.update(userDTO);
+		
+		assertNotNull(response);
+		assertEquals(User.class,response.getClass());
+		assertEquals(ID,response.getId());
+		assertEquals(NAME,response.getName());
+		assertEquals(EMAIL,response.getEmail());
+		assertEquals(PASSWORD,response.getPassword());
+		
+		
 	}
 
 	@Test
@@ -118,6 +156,8 @@ class UserServiceImplTest {
 	}
 	private void startUser() {
 		user= new User(ID, NAME, EMAIL, PASSWORD);
+		
+		user2=new User(ID, NAME2, EMAIL2, PASSWORD2);
 		userDTO= new UserDTO(1, NAME, EMAIL, PASSWORD);
 		optionalUser= Optional.of(new User(1, NAME, EMAIL, PASSWORD));
 	}

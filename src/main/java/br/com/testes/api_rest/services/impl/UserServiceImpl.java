@@ -41,26 +41,17 @@ public class UserServiceImpl implements UserService{
 	}
 	private void findByEmail(UserDTO obj) {
 		Optional<User>user=repository.findByEmail(obj.getEmail());
-		if(user.isPresent()&& user.get().getId().equals(obj.getEmail())) {
+		if(user.isPresent()&& !user.get().getId().equals(obj.getEmail())) {
 			throw new DataIntegratyViolationException("Este e-mail já está cadastrado no sistema");
 			
 		}
 	}
-	@Override
-	public User update(UserDTO obj) {
-		findByEmail(obj);
-		User entity= repository.getReferenceById(obj.getId());
-		updateData(entity,obj);
-		
-		return repository.save(entity);
-		
-	}
-	private void updateData(User entity, UserDTO obj) {
-		entity.setName(obj.getName());
-		entity.setEmail(obj.getEmail());
-		entity.setPassword(obj.getPassword());
-		
-	}
+	   @Override
+	  public User update(UserDTO obj) {
+	   findByEmail(obj);
+	   return repository.save(mapper.map(obj, User.class));
+	    }
+	
 	@Override
 	public void delete(Integer id) {
 		findById(id);
