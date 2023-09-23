@@ -114,7 +114,12 @@ class UserResourceTest {
 
 	@Test
 	void testCreate() {
-		fail("Not yet implemented");
+		when(service.create(any())).thenReturn(user);
+		
+		ResponseEntity<UserDTO>response=resource.create(userDTO);
+		assertEquals(HttpStatus.CREATED,response.getStatusCode());
+		assertNotNull(response.getHeaders().get("Location"));
+		assertEquals(ResponseEntity.class,response.getClass());
 	}
 
 	@Test
