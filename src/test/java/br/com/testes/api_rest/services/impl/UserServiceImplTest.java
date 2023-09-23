@@ -2,10 +2,12 @@ package br.com.testes.api_rest.services.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -152,7 +154,13 @@ class UserServiceImplTest {
 
 	@Test
 	void testDelete() {
-		fail("Not yet implemented");
+		
+		when(repository.findById(anyInt())).thenReturn(optionalUser);
+		doNothing().when(repository).deleteById(ID);
+		service.delete(ID);
+		verify(repository,times(1)).deleteById(anyInt());
+		
+		
 	}
 	private void startUser() {
 		user= new User(ID, NAME, EMAIL, PASSWORD);
