@@ -2,9 +2,11 @@ package br.com.testes.api_rest.resources;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -124,12 +126,30 @@ class UserResourceTest {
 
 	@Test
 	void testUpdate() {
-		fail("Not yet implemented");
+		when(service.update(userDTO)).thenReturn(user);
+		when(mapper.map(any(), any())).thenReturn(userDTO);
+		
+		ResponseEntity<UserDTO>response= resource.update(ID, userDTO);
+		assertNotNull(response);
+		assertNotNull(response.getBody());
+		assertEquals(ResponseEntity.class,response.getClass());
+		assertEquals(UserDTO.class,response.getBody().getClass());
+		assertEquals(HttpStatus.OK,response.getStatusCode());
+		
+		assertEquals(ID,response.getBody().getId());
+		assertEquals(NAME,response.getBody().getName());
+		assertEquals(EMAIL,response.getBody().getEmail());
+		assertEquals(PASSWORD,response.getBody().getPassword());
 	}
 
 	@Test
 	void testDelete() {
-		fail("Not yet implemented");
+		doNothing().when(service).delete(anyInt());
+		ResponseEntity<UserDTO>response=resource.delete(ID);
+		assertNotNull(response);
+		assertEquals(ResponseEntity.class,response.getClass());
+		verify(service,times(1)).delete(anyInt());
+		assertEquals(HttpStatus.NO_CONTENT,response.getStatusCode());
 	}
 
 }
